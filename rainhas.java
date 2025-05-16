@@ -1,69 +1,103 @@
 import java.util.Arrays;
 
 public class rainhas {
+    
+    // Verifica se é seguro colocar uma rainha na posição (x,y)
     static boolean isValid(int board[][], int x, int y) {
-        for (int i = x-1; i >= 0; i--) {
+        // Verifica verticalmente para cima (mesma coluna)
+        for (int i = x - 1; i >= 0; i--) {
             if (board[i][y] != 0) {
                 return false;
             }
         }
-        for (int i = y-1; i >= 0; i--) {
+        // Verifica horizontalmente para esquerda (mesma linha)
+        for (int i = y - 1; i >= 0; i--) {
             if (board[x][i] != 0) {
                 return false;
             }
         }
-
-        for (int i = 1; i < Math.min(x, y); i++) {
-            if (board[x-i][y-i] != 0) {
+        // Verifica diagonal superior esquerda
+        for (int i = 1; x - i >= 0 && y - i >= 0; i++) {
+            if (board[x - i][y - i] != 0) {
                 return false;
             }
         }
-        for (int i = 1; i < Math.min(board.length-x, y); i++) {
-            if (board[x+i][y-i] != 0) {
+        // Verifica diagonal superior direita
+        for (int i = 1; x - i >= 0 && y + i < board.length; i++) {
+            if (board[x - i][y + i] != 0) {
                 return false;
             }
         }
-
         return true;
     }
 
+    // Função recursiva para posicionar N rainhas
     static int[][] nrainhas(int n, int board[][], int x, int y, int tam) {
+        // Caso base: todas as rainhas foram posicionadas
         if (n == 0) {
             return board;
         }
-        
-        if(isValid(board, x, y)) {
+
+        // Verifica se ultrapassou os limites do tabuleiro
+        if (x >= tam) {
+            return null;
+        }
+
+        // Se a posição atual é válida
+        if (isValid(board, x, y)) {
+            // Cria uma cópia do tabuleiro para não modificar o original
             int[][] new_board = new int[tam][tam];
             for (int i = 0; i < board.length; i++) {
                 new_board[i] = Arrays.copyOf(board[i], board[i].length);
             }
-            new_board[x][y] = 1;
-            if(y == tam - 1) {
-                x = x + 1;
-                y = 0;
-            } else {
-                y = y + 1;
+            new_board[x][y] = 1;  // Coloca a rainha
+
+            // Calcula próxima posição (varre linha por linha)
+            int newX = x;
+            int newY = y + 1;
+            if (newY == tam) {  // Chegou ao final da linha
+                newX = x + 1;
+                newY = 0;
             }
-            
-            return nrainhas(n-1, new_board, x, y, tam);
-        }
-        if(y == tam - 1) {
-            x = x + 1;
-            y = 0;
-        } else {
-            y = y + 1;
+
+            // Tenta posicionar a próxima rainha
+            int[][] result = nrainhas(n - 1, new_board, newX, newY, tam);
+            if (result != null) {  // Se encontrou solução
+                return result;
+            }
         }
 
-        return nrainhas(n, board, x, y, tam);
+        // Se não é válido, avança para próxima posição
+        int newX = x;
+        int newY = y + 1;
+        if (newY == tam) {  // Chegou ao final da linha
+            newX = x + 1;
+            newY = 0;
+        }
+
+        // Verifica se ainda está dentro do tabuleiro
+        if (newX >= tam) {
+            return null;
+        }
+
+        // Continua a busca recursivamente
+        return nrainhas(n, board, newX, newY, tam);
     }
 
     public static void main(String[] args) {
-        var res = nrainhas(4, new int[4][4], 0, 0, 4);
-        for (int i = 0; i < 4; i++) {
-            for (int j = 0; j < 4; j++) {
-                System.out.printf("%d ", res[i][j]);
+        int N = 4;  // Número de rainhas/tamanho do tabuleiro
+        int[][] res = nrainhas(N, new int[N][N], 0, 0, N);
+        
+        // Imprime o resultado
+        if (res != null) {
+            for (int i = 0; i < N; i++) {
+                for (int j = 0; j < N; j++) {
+                    System.out.printf("%d ", res[i][j]);
+                }
+                System.out.println();
             }
-            System.out.println();
+        } else {
+            System.out.println("Sem respostas válidas.");
         }
     }
 }
