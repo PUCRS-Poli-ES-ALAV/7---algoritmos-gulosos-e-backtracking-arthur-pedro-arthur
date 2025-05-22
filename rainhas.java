@@ -1,9 +1,13 @@
 import java.util.Arrays;
 
 public class rainhas {
+    static int contadorIteracoes = 0;
+    static int contadorIsValid = 0;
     
     // Verifica se é seguro colocar uma rainha na posição (x,y)
     static boolean isValid(int board[][], int x, int y) {
+        contadorIsValid++;  // Contagem de chamadas
+
         // Verifica verticalmente para cima (mesma coluna)
         for (int i = x - 1; i >= 0; i--) {
             if (board[i][y] != 0) {
@@ -33,6 +37,8 @@ public class rainhas {
 
     // Função recursiva para posicionar N rainhas
     static int[][] nrainhas(int n, int board[][], int x, int y, int tam) {
+        contadorIteracoes++;  // Contagem de iterações
+
         // Caso base: todas as rainhas foram posicionadas
         if (n == 0) {
             return board;
@@ -85,19 +91,40 @@ public class rainhas {
     }
 
     public static void main(String[] args) {
-        int N = 4;  // Número de rainhas/tamanho do tabuleiro
-        int[][] res = nrainhas(N, new int[N][N], 0, 0, N);
+        // int N = 4;  // Número de rainhas/tamanho do tabuleiro
+        // int[][] res = nrainhas(N, new int[N][N], 0, 0, N);
         
-        // Imprime o resultado
-        if (res != null) {
-            for (int i = 0; i < N; i++) {
-                for (int j = 0; j < N; j++) {
-                    System.out.printf("%d ", res[i][j]);
-                }
-                System.out.println();
-            }
-        } else {
-            System.out.println("Sem respostas válidas.");
+        // // Bloco que imprime o resultado
+        // if (res != null) {
+        //     for (int i = 0; i < N; i++) {
+        //         for (int j = 0; j < N; j++) {
+        //             System.out.printf("%d ", res[i][j]);
+        //         }
+        //         System.out.println();
+        //     }
+        // } else {
+        //     System.out.println("Sem respostas válidas.");
+        // }
+        // // Fim do bloco
+
+        // Bloco da tabela
+        System.out.println("N\tSolução?\tIterações\tisValid Calls\tTempo(ms)");
+        System.out.println("================================================================");
+        
+        for(int N = 1; N <= 12; N++) {
+            contadorIteracoes = 0;
+            contadorIsValid = 0;
+            
+            long startTime = System.nanoTime();
+            int[][] res = nrainhas(N, new int[N][N], 0, 0, N);
+            long endTime = System.nanoTime();
+            
+            double duration = (endTime - startTime)/1e6;
+            String solucao = res != null ? "Sim" : "Não";
+            
+            System.out.printf("%d\t%-7s\t%,9d\t%,12d\t%,.3f\n", 
+                N, solucao, contadorIteracoes, contadorIsValid, duration);
         }
+        // Fim do bloco da tabela
     }
 }
