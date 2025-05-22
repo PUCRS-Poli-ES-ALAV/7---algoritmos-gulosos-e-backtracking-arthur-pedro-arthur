@@ -6,9 +6,13 @@ public class rainhas2 {
     
     static List<int[][]> solucoes = new ArrayList<>();
     static int contador = 0;
+    static int contadorIteracoes = 0;
+    static int contadorIsValid = 0;
 
     // Verifica se é seguro colocar uma rainha na posição (x,y)
     static boolean isValid(int board[][], int x, int y) {
+        contadorIsValid++;
+
         // Verifica verticalmente para cima (mesma coluna)
         for (int i = x - 1; i >= 0; i--) {
             if (board[i][y] != 0) {
@@ -38,6 +42,8 @@ public class rainhas2 {
 
     // Função recursiva para posicionar N rainhas
     static void nrainhas(int n, int[][] board, int x, int y, int tam) {
+        contadorIteracoes++;
+
         if (n == 0) {
             int[][] copia = new int[tam][tam];
             for (int i = 0; i < tam; i++) {
@@ -82,25 +88,44 @@ public class rainhas2 {
     }
 
     public static void main(String[] args) {
-        int N = 9;
-        solucoes.clear();
-        contador = 0;
+        // int N = 9;
+        // solucoes.clear();
+        // contador = 0;
 
-        nrainhas(N, new int[N][N], 0, 0, N);
+        // nrainhas(N, new int[N][N], 0, 0, N);
 
-        if (contador == 0) {
-            System.out.println("Sem respostas válidas.");
-        } else {
-            System.out.println("Total de soluções: " + contador);
-            for (int[][] sol : solucoes) {
-                for (int i = 0; i < N; i++) {
-                    for (int j = 0; j < N; j++) {
-                        System.out.printf("%d ", sol[i][j]);
-                    }
-                    System.out.println();
-                }
-                System.out.println();
-            }
+        // if (contador == 0) {
+        //     System.out.println("Sem respostas válidas.");
+        // } else {
+        //     System.out.println("Total de soluções: " + contador);
+        //     for (int[][] sol : solucoes) {
+        //         for (int i = 0; i < N; i++) {
+        //             for (int j = 0; j < N; j++) {
+        //                 System.out.printf("%d ", sol[i][j]);
+        //             }
+        //             System.out.println();
+        //         }
+        //         System.out.println();
+        //     }
+        // }
+
+        System.out.println("N\tSoluções\tIterações\tisValid Calls\tTempo(ms)");
+        System.out.println("================================================================");
+        
+        for(int N = 1; N <= 11; N++) {
+            solucoes.clear();
+            contador = 0;
+            contadorIteracoes = 0;
+            contadorIsValid = 0;
+            
+            long startTime = System.nanoTime();
+            nrainhas(N, new int[N][N], 0, 0, N);
+            long endTime = System.nanoTime();
+            
+            double duration = (endTime - startTime)/1e6;
+            
+            System.out.printf("%d\t%9d\t%,12d\t%,14d\t%,.3f\n", 
+                N, contador, contadorIteracoes, contadorIsValid, duration);
         }
     }
 }
